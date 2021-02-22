@@ -1,4 +1,4 @@
-# RECIPES API
+# PARKING LOT API
 
 Use this URL as base to requests:
 
