@@ -9,7 +9,7 @@ from .models import Vehicle
 from pricings.models import Price
 from levels.models import Level
 from vehicles.models import Vehicle
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class VehicleView(APIView):
@@ -83,12 +83,22 @@ class VehicleView(APIView):
             except:
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
-            paid_at = datetime.utcnow().isoformat() + 'Z'
-            time = 1000
+            paid_at = datetime.now(timezone.utc)
+            time = paid_at - vehicle.arrived_at
+            price = Price.objects.first()
+
+            time = int(time.seconds)/3600
+
+            if time <= 1:
+                time = 1
+
+            value = price.a_coefficient + (price.b_coefficient * time)
+            value = value / time
 
             Vehicle.objects.filter(id=vehicle_id).update(paid_at=paid_at)
 
-            Vehicle.objects.filter(id=vehicle_id).update(amount_paid=time)
+            Vehicle.objects.filter(id=vehicle_id).update(
+                amount_paid=value)
 
             level = Level.objects.get(id=vehicle.level_id)
 
@@ -106,7 +116,7 @@ class VehicleView(APIView):
             new_response['license_plate'] = vehicle.license_plate
             new_response['arrived_at'] = vehicle.arrived_at
             new_response['paid_at'] = paid_at
-            new_response['amount_paid'] = time
+            new_response['amount_paid'] = value
             new_response['spot'] = None
 
             return Response(new_response, status=status.HTTP_200_OK)

@@ -13,7 +13,7 @@ test_pricing_rules (test_api.TestVehicleView) ... ok
 test_spots_are_filled_by_priority (test_api.TestVehicleView) ... ok
 
 ----------------------------------------------------------------------
-Ran 12 tests in 2.255s
+Ran 12 tests in 2.202s
 
 OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
